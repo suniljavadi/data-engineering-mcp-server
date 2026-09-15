@@ -1,0 +1,10 @@
+services:
+  mcp-server:
+    build: .
+    stdin_open: true
+    tty: true
+    environment:
+      DATABASE_URL: sqlite:///data/demo.db
+      LOG_LEVEL: INFO
+    volumes:
+      - ./data:/app/data

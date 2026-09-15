@@ -1,0 +1,22 @@
+[
+  {"question": "What is the status of Customer_Load?", "tool": "get_job_status", "arguments": {"job_name": "Customer_Load"}},
+  {"question": "Why did Customer_Load fail?", "tool": "analyze_job_failure", "arguments": {"job_name": "Customer_Load", "run_id": "RUN-00081"}},
+  {"question": "Show the latest failed execution.", "tool": "get_job_history", "arguments": {"job_name": "Customer_Load", "days": 30}},
+  {"question": "Give me the schema of orders.", "tool": "get_database_schema", "arguments": {"table_name": "orders"}},
+  {"question": "Find incidents related to database timeout.", "tool": "search_incidents", "arguments": {"query": "database timeout", "limit": 5}},
+  {"question": "Validate this SQL.", "tool": "validate_sql", "arguments": {"sql": "SELECT name FROM customers"}},
+  {"question": "Run this SELECT query.", "tool": "execute_readonly_sql", "arguments": {"sql": "SELECT customer_id, name FROM customers", "limit": 10}},
+  {"question": "What is the rollback procedure?", "tool": "search_documentation", "arguments": {"query": "rollback", "top_k": 5}},
+  {"question": "Show errors for a run.", "tool": "get_job_logs", "arguments": {"job_name": "Customer_Load", "run_id": "RUN-00081", "severity": "ERROR", "limit": 10}},
+  {"question": "List recent product executions.", "tool": "get_job_history", "arguments": {"job_name": "Product_Load", "days": 30}},
+  {"question": "Is DROP safe?", "tool": "validate_sql", "arguments": {"sql": "DROP TABLE customers"}},
+  {"question": "Search connection incidents.", "tool": "search_incidents", "arguments": {"query": "connection", "limit": 3}},
+  {"question": "Inspect the customers schema.", "tool": "get_database_schema", "arguments": {"table_name": "customers"}},
+  {"question": "Get warning logs.", "tool": "get_job_logs", "arguments": {"job_name": "Order_Load", "severity": "WARN", "limit": 20}},
+  {"question": "Analyze an unknown job.", "tool": "get_job_status", "arguments": {"job_name": "Unknown_Load"}},
+  {"question": "Search timeout documentation.", "tool": "search_documentation", "arguments": {"query": "timeout", "top_k": 3}},
+  {"question": "Read a bounded order query.", "tool": "execute_readonly_sql", "arguments": {"sql": "SELECT * FROM orders", "limit": 5}},
+  {"question": "Find schema mismatch incidents.", "tool": "search_incidents", "arguments": {"query": "schema mismatch", "limit": 5}},
+  {"question": "Get invoice status.", "tool": "get_job_status", "arguments": {"job_name": "Invoice_Load"}},
+  {"question": "Inspect the failure evidence.", "tool": "analyze_job_failure", "arguments": {"job_name": "Customer_Load", "run_id": "RUN-00081"}}
+]
