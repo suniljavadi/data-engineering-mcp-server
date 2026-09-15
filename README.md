@@ -1,5 +1,9 @@
 # Data Engineering MCP Server
 
+**Status: Completed local portfolio implementation; synthetic data and stdio transport**
+
+**Status: Completed local portfolio implementation; synthetic data and stdio transport**
+
 A small, runnable Model Context Protocol server for data-engineering investigation workflows. It uses the official MCP Python SDK, Pydantic validation, SQLite synthetic data, and a service/repository architecture that is easy to study and replace with production adapters.
 
 ## What MCP Is
@@ -109,13 +113,24 @@ Production improvements would include authentication at the host boundary, per-t
 
 **Scenario questions:** diagnose a timeout, explain a schema mismatch, reject an unsafe query, handle an unknown run, select between a resource and a tool, investigate an incident with evidence, control a high-cost query, recover from a downstream outage, explain a failed prompt workflow, and migrate SQLite to PostgreSQL.
 
-## GitHub And Resume Notes
+## Resume Relevance
+
+Demonstrates the official MCP Python SDK, typed tools/resources/prompts, Pydantic validation, read-only SQL controls, service/repository separation, synthetic ETL data, structured errors, audit metadata, pytest, and Docker packaging.
+
+## Author and Related Work
+
+**Sunil Javadi** · [GitHub](https://github.com/suniljavadi) · [Portfolio](https://github.com/suniljavadi/sunil-portfolio) · [LinkedIn](https://www.linkedin.com/in/sunil-javadi/)
+
+- [Data Engineering MCP Server](https://github.com/suniljavadi/data-engineering-mcp-server)
+- [Multi-Agent Data Engineering Assistant](https://github.com/suniljavadi/Multi-Agent-AI-Data-Engineering-Assistant)
+- [Enterprise Text-to-SQL AI Agent](https://github.com/suniljavadi/Text-to-SQL-AI-Agent)
+
+## Local Git Workflow
 
 ```powershell
-git init
 git add .
 git commit -m "Build data engineering MCP server"
-git branch -M main
+git push origin main
 ```
 
 Resume bullets: built an official MCP Python server exposing typed data-engineering tools, resources, and prompts; implemented read-only SQL policy, bounded execution, structured errors, and audit logging; generated deterministic synthetic ETL data and an MCP stdio client with pytest coverage and Docker packaging.
