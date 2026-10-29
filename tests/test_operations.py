@@ -1,3 +1,6 @@
+import sqlite3
+
+from data_engineering_mcp.database.database import connect, initialize_database
 from data_engineering_mcp.services.operations import ServiceError, validate_sql
 
 
@@ -34,6 +37,40 @@ def test_readonly_query_is_limited_and_returns_columns(operations):
     result = operations.execute_readonly_sql("SELECT customer_id, name FROM customers", 100)
     assert result["columns"] == ["customer_id", "name"]
     assert result["row_count"] == 10
+
+
+def test_query_only_connection_rejects_writes(tmp_path):
+    database_path = tmp_path / "readonly.db"
+    initialize_database(database_path)
+    connection = connect(database_path, query_only=True)
+    try:
+        assert connection.execute("SELECT COUNT(*) FROM customers").fetchone()[0] == 20
+        try:
+            connection.execute("DELETE FROM customers")
+        except sqlite3.OperationalError as error:
+            assert "readonly" in str(error).lower()
+        else:
+            raise AssertionError("Expected SQLite query-only mode to reject writes")
+    finally:
+        connection.close()
+
+
+def test_query_execution_is_interrupted_after_timeout(operations):
+    operations.query_timeout_seconds = 0.001
+    sql = """
+        WITH RECURSIVE numbers(value) AS (
+            VALUES (0)
+            UNION ALL
+            SELECT value + 1 FROM numbers WHERE value < 100000000
+        )
+        SELECT sum(value) FROM numbers
+    """
+    try:
+        operations.execute_readonly_sql(sql, 1)
+    except ServiceError as error:
+        assert error.code == "QUERY_ERROR"
+    else:
+        raise AssertionError("Expected the query timeout to interrupt execution")
 
 
 def test_schema_documentation_incidents_and_failure_analysis(operations):

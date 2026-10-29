@@ -81,9 +81,9 @@ The compose service is intentionally stdio-oriented. An MCP host that supports l
 
 ## Configuration And Safety
 
-Copy `.env.example` to `.env` for local overrides. Only synthetic data is included. Credentials are never returned by schema tools and `.env`/SQLite files are ignored by Git.
+Configuration can be supplied through environment variables: `DATABASE_URL` (SQLite URLs only), `LOG_LEVEL`, `SQL_QUERY_TIMEOUT_SECONDS` (1–300), `MAX_QUERY_ROWS` (1–100), and `MAX_LOG_ROWS` (1–100). A local `.env` file is also supported for development; `.env` and `.env.*` files are ignored by Git. Never put production credentials in a checked-in file. Only synthetic data is included. Credentials are never returned by schema tools.
 
-SQL execution is defense-in-depth: it accepts only a single `SELECT` or `WITH`, rejects write and administrative keywords, uses parameterized repository queries for application operations, and enforces a row limit. The demo uses SQLite and a short connection timeout; production should add a dedicated read-only database identity and a database-enforced statement timeout.
+SQL execution is defense-in-depth: it accepts only a single `SELECT` or `WITH`, rejects write and administrative keywords, runs the server connection in SQLite query-only mode, interrupts expensive SQL after the configured timeout, and enforces a row limit. Production deployments should additionally use a dedicated read-only database identity and database-enforced statement timeouts.
 
 ## Data And Tests
 

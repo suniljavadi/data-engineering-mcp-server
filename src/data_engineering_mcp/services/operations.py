@@ -32,9 +32,17 @@ def validate_sql(sql: str) -> dict[str, Any]:
 
 
 class OperationsService:
-    def __init__(self, repository: Repository, max_rows: int = 100):
+    def __init__(
+        self,
+        repository: Repository,
+        max_rows: int = 100,
+        max_log_rows: int | None = None,
+        query_timeout_seconds: float = 2,
+    ):
         self.repository = repository
         self.max_rows = max_rows
+        self.max_log_rows = max_rows if max_log_rows is None else max_log_rows
+        self.query_timeout_seconds = query_timeout_seconds
 
     def get_job_status(self, job_name: str) -> dict[str, Any]:
         result = self.repository.job_status(job_name)
@@ -45,7 +53,7 @@ class OperationsService:
     def get_job_logs(self, job_name: str, run_id: str | None = None, severity: str | None = None, limit: int = 50) -> dict[str, Any]:
         if not self.repository.job_status(job_name):
             raise ServiceError("NOT_FOUND", f"Unknown job: {job_name}")
-        logs = self.repository.logs(job_name, run_id, severity, min(limit, self.max_rows))
+        logs = self.repository.logs(job_name, run_id, severity, min(limit, self.max_log_rows))
         if run_id and not logs:
             known = self.repository.connection.execute("SELECT 1 FROM etl_executions WHERE run_id = ? AND job_name = ?", (run_id, job_name)).fetchone()
             if not known:
@@ -68,7 +76,7 @@ class OperationsService:
         if not validation["valid"]:
             raise ServiceError("UNSAFE_SQL", validation["warnings"][0])
         try:
-            return self.repository.execute_readonly(sql, min(limit, self.max_rows))
+            return self.repository.execute_readonly(sql, min(limit, self.max_rows), self.query_timeout_seconds)
         except Exception as exc:
             raise ServiceError("QUERY_ERROR", "The read-only query could not be executed") from exc
 

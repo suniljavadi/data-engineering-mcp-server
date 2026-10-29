@@ -1,6 +1,7 @@
 import re
 import sqlite3
 from datetime import datetime, timedelta, timezone
+from time import monotonic
 from typing import Any
 
 
@@ -48,7 +49,15 @@ class Repository:
             params = tuple(value for term in terms for value in (term, term, term, term)) + (limit,)
         return [dict(row) for row in self.connection.execute(sql, params)]
 
-    def execute_readonly(self, sql: str, limit: int) -> dict[str, Any]:
-        cursor = self.connection.execute(sql)
-        rows = [dict(row) for row in cursor.fetchmany(limit)]
-        return {"columns": [description[0] for description in cursor.description or []], "rows": rows, "row_count": len(rows)}
+    def execute_readonly(self, sql: str, limit: int, timeout_seconds: float = 2) -> dict[str, Any]:
+        started = monotonic()
+        self.connection.set_progress_handler(
+            lambda: int(monotonic() - started >= timeout_seconds),
+            1000,
+        )
+        try:
+            cursor = self.connection.execute(sql)
+            rows = [dict(row) for row in cursor.fetchmany(limit)]
+            return {"columns": [description[0] for description in cursor.description or []], "rows": rows, "row_count": len(rows)}
+        finally:
+            self.connection.set_progress_handler(None, 0)

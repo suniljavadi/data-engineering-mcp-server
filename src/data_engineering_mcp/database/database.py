@@ -17,11 +17,13 @@ CREATE INDEX IF NOT EXISTS idx_logs_run ON etl_logs(run_id, timestamp);
 """
 
 
-def connect(path: Path) -> sqlite3.Connection:
+def connect(path: Path, timeout_seconds: int = 2, query_only: bool = False) -> sqlite3.Connection:
     path.parent.mkdir(parents=True, exist_ok=True)
-    connection = sqlite3.connect(path, timeout=2)
+    connection = sqlite3.connect(path, timeout=timeout_seconds)
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
+    if query_only:
+        connection.execute("PRAGMA query_only = ON")
     return connection
 
 

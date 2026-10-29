@@ -34,7 +34,17 @@ def service() -> OperationsService:
     global _service
     if _service is None:
         initialize_database(settings.sqlite_path)
-        _service = OperationsService(Repository(connect(settings.sqlite_path)), settings.max_query_rows)
+        connection = connect(
+            settings.sqlite_path,
+            timeout_seconds=settings.sql_query_timeout_seconds,
+            query_only=True,
+        )
+        _service = OperationsService(
+            Repository(connection),
+            max_rows=settings.max_query_rows,
+            max_log_rows=settings.max_log_rows,
+            query_timeout_seconds=settings.sql_query_timeout_seconds,
+        )
     return _service
 
 
